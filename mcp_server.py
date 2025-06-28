@@ -1,5 +1,5 @@
 from math import atan2, cos, radians, sin, sqrt
-from typing import Tuple
+from typing import List, Tuple
 
 from mcp.server.fastmcp import FastMCP
 
@@ -10,22 +10,6 @@ def adjacent_area(area_gps:List[Tuple[str,str]]):
     # [('南山区','29.124,112.231'),('福田区','30.144,113.232'),('罗湖区','30.144,122.421')]
 
     nearest_areas = []
-
-    for i, (area_name, gps) in enumerate(area_gps):
-        lat1, lon1 = map(float, gps.split(','))
-        min_distance = float('inf')
-        nearest_area = None
-
-        for j, (other_area_name, other_gps) in enumerate(area_gps):
-            if i != j:
-                lat2, lon2 = map(float, other_gps.split(','))
-                distance = _haversine(lon1, lat1, lon2, lat2)
-                if distance < min_distance:
-                    min_distance = distance
-                    nearest_area = other_area_name
-
-        nearest_areas.append((area_name, nearest_area))
-
 
     def _haversine(lon1, lat1, lon2, lat2):
         """
@@ -43,6 +27,22 @@ def adjacent_area(area_gps:List[Tuple[str,str]]):
         r = 6371  # 地球半径，单位为公里
         return c * r
 
+    for i, (area_name, gps) in enumerate(area_gps):
+        lat1, lon1 = map(float, gps.split(','))
+        min_distance = float('inf')
+        nearest_area = None
+
+        for j, (other_area_name, other_gps) in enumerate(area_gps):
+            if i != j:
+                lat2, lon2 = map(float, other_gps.split(','))
+                distance = _haversine(lon1, lat1, lon2, lat2)
+                if distance < min_distance:
+                    min_distance = distance
+                    nearest_area = other_area_name
+
+        nearest_areas.append({area_name:nearest_area})
+
+
     return nearest_areas
 if __name__ == "__main__":
-    mcp.run(transport='stdio')
+    mcp.run(transport='streamable-http')
