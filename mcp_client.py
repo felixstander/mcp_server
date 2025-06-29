@@ -1,7 +1,9 @@
 import asyncio
 
+from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_mcp_adapters.client import MultiServerMCPClient
 
+from langchain_model import ChatOpenRouter
 from mcp_server import adjacent_area
 
 client = MultiServerMCPClient(
@@ -33,5 +35,27 @@ async def main():
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    # asyncio.run(main())
+
+    # llm = ChatGoogleGenerativeAI(
+    #     model="gemini-2.0-flash",
+    #     temperature=0,
+    #     max_tokens=None,
+    #     timeout=None,
+    #     max_retries=2,
+    #     # other params...
+    # )
+
+    llm = ChatOpenRouter(
+        model_name="openai/gpt-4o"
+)
+    messages = [
+    (
+        "system",
+        "You are a helpful assistant that translates English to Chinese. Translate the user sentence.",
+    ),
+    ("human", "I love programming."),
+]
+    ai_msg = llm.invoke(messages)
+    print(ai_msg)
 
